@@ -22,6 +22,11 @@ defaultMarkers.forEach(marker => {
     .openPopup();
 });
 
+// Automatically get the user's location when the page loads
+window.onload = function() {
+  getLocation();
+};
+
 // Handle Geolocation
 function getLocation() {
   if (navigator.geolocation) {
