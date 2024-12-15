@@ -1,67 +1,78 @@
+// Initialize the map
+const map = L.map('map').setView([20.5937, 78.9629], 5); // Centered on India
+
+// Add OpenStreetMap tiles
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  maxZoom: 18,
+  attribution: '© OpenStreetMap'
+}).addTo(map);
+
+// Default markers
+const defaultMarkers = [
+  { lat: 28.7041, lng: 77.1025, title: "Delhi" },
+  { lat: 19.076, lng: 72.8777, title: "Mumbai" },
+  { lat: 13.0827, lng: 80.2707, title: "Chennai" },
+  { lat: 22.5726, lng: 88.3639, title: "Kolkata" }
+];
+
+// Add default markers to the map
+defaultMarkers.forEach(marker => {
+  L.marker([marker.lat, marker.lng]).addTo(map)
+    .bindPopup(`<b>${marker.title}</b>`)
+    .openPopup();
+});
+
+// Handle Geolocation
 function getLocation() {
-    if (navigator.geolocation) {
-      console.log("Geolocation API is supported.");
-      navigator.geolocation.getCurrentPosition(showPosition, showError);
-    } else {
-      console.error("Geolocation is not supported by this browser.");
-      alert("Geolocation is not supported by this browser.");
-    }
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(showPosition, showError);
+  } else {
+    alert("Geolocation is not supported by this browser.");
   }
-  
-  function showPosition(position) {
-    const latitude = position.coords.latitude;
-    const longitude = position.coords.longitude;
-  
-    // Display map with OpenStreetMap
-    const mapDiv = document.getElementById("map");
-    mapDiv.innerHTML = `<iframe 
-      src="https://www.openstreetmap.org/export/embed.html?bbox=${longitude - 0.1}%2C${latitude - 0.1}%2C${longitude + 0.1}%2C${latitude + 0.1}&marker=${latitude}%2C${longitude}" 
-      width="100%" 
-      height="100%" 
-      style="border:1px solid black;">
-    </iframe>`;
-  
-    // Redirect button
-    const redirectButton = document.createElement("button");
-    redirectButton.textContent = "Go to My Location";
-    redirectButton.style.marginTop = "10px";
-    redirectButton.onclick = () => {
-      window.location.href = `https://www.openstreetmap.org/?mlat=${latitude}&mlon=${longitude}&zoom=14`;
-    };
-    document.body.appendChild(redirectButton);
+}
+
+// Show the user's location on the map
+function showPosition(position) {
+  const latitude = position.coords.latitude;
+  const longitude = position.coords.longitude;
+
+  // Add a marker for the user's location
+  L.marker([latitude, longitude])
+    .addTo(map)
+    .bindPopup("<b>Your Location</b>")
+    .openPopup();
+
+  // Center the map on the user's location
+  map.setView([latitude, longitude], 13);
+}
+
+// Handle geolocation errors
+function showError(error) {
+  switch (error.code) {
+    case error.PERMISSION_DENIED:
+      alert(
+        "Location permissions are denied. Check your browser settings to allow location access for this site."
+      );
+      document.getElementById("manual-location").style.display = "block";
+      break;
+    case error.POSITION_UNAVAILABLE:
+      alert("Location information is unavailable. Try again later.");
+      break;
+    case error.TIMEOUT:
+      alert("The request to get your location timed out. Please try again.");
+      break;
+    case error.UNKNOWN_ERROR:
+      alert("An unknown error occurred. Please refresh the page and try again.");
+      break;
   }
-  
-  function showError(error) {
-    const mapDiv = document.getElementById("map");
-    switch (error.code) {
-      case error.PERMISSION_DENIED:
-        mapDiv.innerHTML = `<p style="color: red;">Location access denied. Please allow location permissions or manually enter your location below.</p>`;
-        alert(
-          "Location permissions are denied. Check your browser settings to allow location access for this site."
-        );
-        document.getElementById("manual-location").style.display = "block";
-        break;
-      case error.POSITION_UNAVAILABLE:
-        mapDiv.innerHTML = `<p style="color: red;">Location information is unavailable. Try again later or manually enter your location below.</p>`;
-        document.getElementById("manual-location").style.display = "block";
-        break;
-      case error.TIMEOUT:
-        mapDiv.innerHTML = `<p style="color: red;">Request timed out. Please try again.</p>`;
-        document.getElementById("manual-location").style.display = "block";
-        break;
-      case error.UNKNOWN_ERROR:
-        mapDiv.innerHTML = `<p style="color: red;">An unknown error occurred. Please refresh the page or manually enter your location below.</p>`;
-        document.getElementById("manual-location").style.display = "block";
-        break;
-    }
+}
+
+// Redirect to OpenStreetMap search for manual location input
+function redirectToMap() {
+  const locationInput = document.getElementById("location-input").value;
+  if (locationInput) {
+    window.location.href = `https://www.openstreetmap.org/search?query=${encodeURIComponent(locationInput)}`;
+  } else {
+    alert("Please enter a valid location.");
   }
-  
-  function redirectToMap() {
-    const locationInput = document.getElementById("location-input").value;
-    if (locationInput) {
-      window.location.href = `https://www.openstreetmap.org/search?query=${encodeURIComponent(locationInput)}`;
-    } else {
-      alert("Please enter a valid location.");
-    }
-  }
-  
+}

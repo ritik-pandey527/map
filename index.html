@@ -3,7 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Location Redirect</title>
+  <title>Map with Default Markers</title>
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha384-o9ECxeA65z1XIQMdJDN26NV4YkCFgfOOG1L5nEzbmHt2KFIbXQm+9z+7J/l4dY4N"
+    crossorigin=""
+  />
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -57,6 +63,7 @@
     <input type="text" id="location-input" placeholder="City or address">
     <button onclick="redirectToMap()">Search</button>
   </div>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-gZbXuV90IkXm2ddrHbkDHoAJzUMl8cYJr7J6K6QmMEZmfRWti2fK14qehySU8hOA" crossorigin=""></script>
   <script src="script.js"></script>
 </body>
 </html>
